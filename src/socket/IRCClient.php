@@ -224,6 +224,23 @@ class IRCClient implements Client{
                     $this->server->getChatServer()->sendMessageToChannel($msg[2], $this->ident, $chan);
                 }
                 break;
+            case "PONG":
+                //TODO
+                break;
+            case "QUIT":
+                $this->close();
+                break;
+            case "PART":
+                //TODO
+                break;
+            case "USERS":
+                $this->sendNumerical("395 {$this->nick} :ShogChat can't display users in channel.");
+                break;
+            case "WHOIS":
+                //TODO check nick
+                $this->sendNumerical("311 {$this->nick} {$this->nick} {$this->ident} {$this->host} * :{$this->realName}");
+                $this->sendNumerical("318 {$this->nick} {$this->nick} :End of /WHOIS list.");
+                break;
             default:
                 Logger::warning($msg[0] . " is an unrecognized IRC command.");
                 break;
