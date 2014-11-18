@@ -225,7 +225,7 @@ class IRCClient implements Client{
                 }
                 break;
             case "PONG":
-                //TODO
+                //Nothing needed?
                 break;
             case "QUIT":
                 $this->close();
@@ -262,6 +262,10 @@ class IRCClient implements Client{
         $this->send(":{$this} JOIN #$name");
         //$this->send("MODE #$name +sn");
         $this->channels[] = $name;
+    }
+
+    public function removeChannel($name){
+        // TODO: Implement removeChannel() method.
     }
 
     /**

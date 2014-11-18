@@ -49,6 +49,13 @@ class SocketClient implements Client{
     public function isMemberOf($name){
         return in_array($name, $this->channels);
     }
+    public function removeChannel($name){
+        $i = array_search($name, $this->channels);
+        if($i != false){
+            unset($this->channels[$i]);
+        }
+    }
+
     /**
      * @return boolean
      */

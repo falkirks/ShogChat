@@ -27,15 +27,15 @@ var channelManager = function(){
     this.renderChannelList = function() {
         var out = '<table class="table table-bordered">';
         for (var chanName in this.chans) {
-            if(this.chans.hasOwnProperty(chanName)) {
+            if(this.chans.hasOwnProperty(chanName) && this.chans[chanName] != null) {
                 if (chanName == this.currentChannel) {
-                    out += '<tr class="channelName active"><td>' + chanName + '</td></tr>';
+                    out += '<tr class="channel active"><td><span class="channelName">' + chanName + '</span><span class="glyphicon glyphicon-remove channelRemove"></span></td></tr>';
                 }
                 else if (this.chans[chanName].hasNewMessage) {
-                    out += '<tr class="channelName warning"><td>' + chanName + '</td></tr>';
+                    out += '<tr class="channel warning"><td><span class="channelName"> ' + chanName + '</span><span class="glyphicon glyphicon-remove channelRemove"></span></td></tr>';
                 }
                 else {
-                    out += '<tr class="channelName"><td>' + chanName + '</td></tr>';
+                    out += '<tr class="channel"><td><span class="channelName">' + chanName + '</span><span class="glyphicon glyphicon-remove channelRemove"></span></td></tr>';
                 }
             }
         }
@@ -46,7 +46,7 @@ var channelManager = function(){
         if(this.currentChannel != false){
             var out = '<table class="table">';
             for(var i = 0; i < this.chans[this.currentChannel].messages.length; i++){
-                out += '<tr class="channelName">' + '<td style="width: 85px"><b>' + this.chans[this.currentChannel].messages[i].sender + "</b></td> <td>" + this.chans[this.currentChannel].messages[i].content + "</td>";
+                out += '<tr>' + '<td style="width: 85px"><b>' + this.chans[this.currentChannel].messages[i].sender + "</b></td> <td>" + this.chans[this.currentChannel].messages[i].content + "</td>";
             }
             out += "</table>";
             $("#messageHolder").html(out);
@@ -60,13 +60,18 @@ var channelManager = function(){
             };
         }
     };
+    this.removeChannel = function(name){
+        if(this.chans[name] != null){
+            this.chans[name] = null;
+        }
+    };
     this.setCurrentChan = function(name) {
         this.currentChannel = name;
         this.chans[name].hasNewMessage = false;
         this.renderMessageList();
         this.renderChannelList();
         $("#nameHolder").html(name);
-    }
+    };
     this.addMessage = function(chan, message){
         this.chans[chan].messages.push(message);
         if(chan == this.currentChannel) {
@@ -109,8 +114,15 @@ ws.onmessage = function(evt){
                 channels.addChannel(json.payload.channel);
                 channels.renderChannelList();
             }
+            else if(json.payload.verb == "remove"){
+                if(json.payload.channel == channels.currentChannel){
+                    channels.currentChannel = false;
+                }
+                channels.removeChannel(json.payload.channel);
+                channels.renderChannelList();
+            }
             else{
-                alert("Could not add channel.");
+                alert("Channel action failed.");
             }
             break;
         default:
@@ -145,6 +157,17 @@ $("#addChannelButton").on("click", function(){
     }));
     $("#channelInput").val('');
 });
-$('#channelHolder').on('click', 'td', function(){
-   channels.setCurrentChan($(this).html());
+$('#channelHolder').on('click', '.channel', function(e){
+    if($(e.target).hasClass("channelRemove")){
+        ws.send(JSON.stringify({
+            type: "channel",
+            payload: {
+                channel: $(this).find('.channelName').first().html(),
+                verb: "remove"
+            }
+        }));
+    }
+    else {
+        channels.setCurrentChan($(this).find('.channelName').first().html());
+    }
 });

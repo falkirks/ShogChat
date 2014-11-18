@@ -60,8 +60,8 @@ class ChatServer implements MessageComponentInterface{
         Logger::debug("WS message received: $msg");
         switch($json["type"]){
             case "message":
-                if($this->clients->offsetGet($from)->isAuthenticated()){
-                    if($this->clients->offsetGet($from)->isMemberOf($json["payload"]["channel"])){
+                if($this->clients[$from]->isAuthenticated()){
+                    if($this->clients[$from]->isMemberOf($json["payload"]["channel"])){
                         $this->sendMessageToChannel($json["payload"]["message"], $from, $json["payload"]["channel"]);
                         if($this->isBridged()){
                             $this->irc->sendMessageToChannel($json["payload"]["message"], "{$this->clients[$from]->getUser()["_id"]}!{$this->clients[$from]->getUser()["_id"]}@{$from->remoteAddress}", $json["payload"]["channel"]);
@@ -70,22 +70,33 @@ class ChatServer implements MessageComponentInterface{
                 }
                 break;
             case "channel":
-                if($this->clients->offsetGet($from)->isAuthenticated()) {
+                if($this->clients[$from]->isAuthenticated()) {
                     if ($json["payload"]["verb"] == "add") {
                         $reply = $json;
                         $chan = Channels::getChannel($json["payload"]["channel"]);
                         if($chan !== null) {
-                            if (!$chan["private"] && !in_array($this->clients->offsetGet($from)->getUser()['_id'], $chan["banned"])) {
+                            if (!$chan["private"] && !in_array($this->clients[$from]->getUser()['_id'], $chan["banned"])) {
                                 $reply["payload"]["verb"] = "add";
-                                $this->clients->offsetGet($from)->addChannel( $json["payload"]["channel"]);
+                                $this->clients[$from]->addChannel($json["payload"]["channel"]);
                             }
-                            elseif(Users::isRepoOwner($this->clients->offsetGet($from)->getUser()["_id"], $json["payload"]["channel"])) {
+                            elseif(Users::isRepoOwner($this->clients[$from]->getUser()["_id"], $json["payload"]["channel"])) {
                                 $reply["payload"]["verb"] = "add";
-                                $this->clients->offsetGet($from)->addChannel( $json["payload"]["channel"]);
+                                $this->clients[$from]->addChannel($json["payload"]["channel"]);
                             }
                             else{
                                 $reply["payload"]["verb"] = "error";
                             }
+                        }
+                        else{
+                            $reply["payload"]["verb"] = "error";
+                        }
+                        $from->send(json_encode($reply));
+                    }
+                    elseif($json["payload"]["verb"] == "remove"){
+                        $reply = $json;
+                        if($this->clients[$from]->isMemberOf($json["payload"]["channel"])){
+                            $reply["payload"]["verb"] = "remove";
+                            $this->clients[$from]->removeChannel($json["payload"]["channel"]);
                         }
                         else{
                             $reply["payload"]["verb"] = "error";
@@ -98,7 +109,7 @@ class ChatServer implements MessageComponentInterface{
                 $from->send(json_encode([
                     "type" => "authreply",
                     "payload" => [
-                        "done" => $this->clients->offsetGet($from)->authenticate($json["payload"])
+                        "done" => $this->clients[$from]->authenticate($json["payload"])
                     ]
                 ]));
                 break;
