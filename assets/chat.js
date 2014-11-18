@@ -57,8 +57,14 @@ var channelManager = function(){
     this.renderMessageList = function(){
         if(this.currentChannel != false){
             var out = '<table class="table">';
-            for(var i = 0; i < this.chans.get(this.currentChannel).messages.length; i++){
-                out += '<tr>' + '<td style="width: 85px"><b>' + this.chans.get(this.currentChannel).messages[i].sender + "</b></td> <td>" + this.chans.get(this.currentChannel).messages[i].content + "</td>";
+            var chan = this.chans.get(this.currentChannel);
+            for(var i = 0; i < chan.messages.length; i++){
+                if(chan.messages[i].marked){
+                    out += '<tr>' + '<td style="width: 85px"><b><mark>' + chan.messages[i].sender + "</mark></b></td> <td>" + chan.messages[i].content + "</td>";
+                }
+                else {
+                    out += '<tr>' + '<td style="width: 85px"><b>' + chan.messages[i].sender + "</b></td> <td>" + chan.messages[i].content + "</td>";
+                }
             }
             out += "</table>";
             $("#messageHolder").html(out);
@@ -86,15 +92,20 @@ var channelManager = function(){
     };
     this.addMessage = function(name, message){
         var chan = this.chans.get(name);
-        chan.messages.push(message);
-        if(name == this.currentChannel) {
-            this.chans.set(name, chan);
-            this.renderMessageList();
+        if(chan.messages.length == 0 || chan.messages[chan.messages.length-1].content != message.content || chan.messages[chan.messages.length-1].sender != message.sender || (chan.messages[chan.messages.length-1].marked && message.marked)) {
+            chan.messages.push(message);
+            if (name == this.currentChannel) {
+                this.chans.set(name, chan);
+                this.renderMessageList();
+            }
+            else {
+                chan.hasNewMessage = true;
+                this.chans.set(name, chan);
+                this.renderChannelList();
+            }
         }
         else{
-            chan.hasNewMessage = true;
-            this.chans.set(name, chan);
-            this.renderChannelList();
+            this.renderMessageList();
         }
     };
 };
@@ -151,8 +162,9 @@ $("#sendButton").on("click", function(){
     if(channels.currentChannel != false) {
         channels.addMessage(channels.currentChannel, {
             content: $("#messageInput").val(),
-            sender: "<mark>" + session.split("$$")[0] + "</mark>"
-        });
+            sender: session.split("$$")[0],
+            marked: true
+        }, true);
         ws.send(JSON.stringify({
             type: "message",
             payload: {

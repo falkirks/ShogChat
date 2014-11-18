@@ -131,7 +131,8 @@ class ChatServer implements MessageComponentInterface{
             "payload" => [
                 "message" => [
                     "content" => $msg,
-                    "sender" => ($from instanceof ConnectionInterface ? $this->clients[$from]->getUser()["_id"] : $from)
+                    "sender" => ($from instanceof ConnectionInterface ? $this->clients[$from]->getUser()["_id"] : $from),
+                    "marked" => false
                 ],
                 "channel" => $chan
             ]
