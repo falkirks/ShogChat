@@ -22,21 +22,33 @@ var spinner = new Spinner(opts).spin(target);
 var connected = false;
 var authed = false;
 var channelManager = function(){
-    this.chans = {};
+    //this.chans = {};
+    this.chans = new window.Basil();
     this.currentChannel = false;
+    this.addAllChannels = function(){
+        var keys = this.chans.keys();
+        for (var i = 0; i < keys.length; i++) {
+            ws.send(JSON.stringify({
+                type: "channel",
+                payload: {
+                    channel: keys[i],
+                    verb: "add"
+                }
+            }));
+        }
+    };
     this.renderChannelList = function() {
         var out = '<table class="table table-bordered">';
-        for (var chanName in this.chans) {
-            if(this.chans.hasOwnProperty(chanName) && this.chans[chanName] != null) {
-                if (chanName == this.currentChannel) {
-                    out += '<tr class="channel active"><td><span class="channelName">' + chanName + '</span><span class="glyphicon glyphicon-remove channelRemove"></span></td></tr>';
-                }
-                else if (this.chans[chanName].hasNewMessage) {
-                    out += '<tr class="channel warning"><td><span class="channelName"> ' + chanName + '</span><span class="glyphicon glyphicon-remove channelRemove"></span></td></tr>';
-                }
-                else {
-                    out += '<tr class="channel"><td><span class="channelName">' + chanName + '</span><span class="glyphicon glyphicon-remove channelRemove"></span></td></tr>';
-                }
+        var keys = this.chans.keys();
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i] == this.currentChannel) {
+                out += '<tr class="channel active"><td><span class="channelName">' + keys[i] + '</span><span class="glyphicon glyphicon-remove channelRemove"></span></td></tr>';
+            }
+            else if (this.chans.get(keys[i]).hasNewMessage) {
+                out += '<tr class="channel warning"><td><span class="channelName"> ' + keys[i] + '</span><span class="glyphicon glyphicon-remove channelRemove"></span></td></tr>';
+            }
+            else {
+                out += '<tr class="channel"><td><span class="channelName">' + keys[i] + '</span><span class="glyphicon glyphicon-remove channelRemove"></span></td></tr>';
             }
         }
         out += "</table>";
@@ -45,43 +57,46 @@ var channelManager = function(){
     this.renderMessageList = function(){
         if(this.currentChannel != false){
             var out = '<table class="table">';
-            for(var i = 0; i < this.chans[this.currentChannel].messages.length; i++){
-                out += '<tr>' + '<td style="width: 85px"><b>' + this.chans[this.currentChannel].messages[i].sender + "</b></td> <td>" + this.chans[this.currentChannel].messages[i].content + "</td>";
+            for(var i = 0; i < this.chans.get(this.currentChannel).messages.length; i++){
+                out += '<tr>' + '<td style="width: 85px"><b>' + this.chans.get(this.currentChannel).messages[i].sender + "</b></td> <td>" + this.chans.get(this.currentChannel).messages[i].content + "</td>";
             }
             out += "</table>";
             $("#messageHolder").html(out);
         }
     };
     this.addChannel = function(name){
-        if(this.chans[name] == null){
-            this.chans[name] = {
+        if(this.chans.get(name) == null){
+            this.chans.set(name, {
                 messages: [],
                 hasNewMessage: false
-            };
+            });
         }
     };
     this.removeChannel = function(name){
-        if(this.chans[name] != null){
-            this.chans[name] = null;
-        }
+        this.chans.remove(name);
     };
     this.setCurrentChan = function(name) {
         this.currentChannel = name;
-        this.chans[name].hasNewMessage = false;
+        var chan = this.chans.get(name);
+        chan.hasNewMessage = false;
+        this.chans.set(name, chan);
         this.renderMessageList();
         this.renderChannelList();
         $("#nameHolder").html(name);
     };
-    this.addMessage = function(chan, message){
-        this.chans[chan].messages.push(message);
-        if(chan == this.currentChannel) {
+    this.addMessage = function(name, message){
+        var chan = this.chans.get(name);
+        chan.messages.push(message);
+        if(name == this.currentChannel) {
+            this.chans.set(name, chan);
             this.renderMessageList();
         }
         else{
-            this.chans[chan].hasNewMessage = true;
+            chan.hasNewMessage = true;
+            this.chans.set(name, chan);
             this.renderChannelList();
         }
-    }
+    };
 };
 var channels = new channelManager();
 
@@ -107,6 +122,8 @@ ws.onmessage = function(evt){
             if(json.payload.done == true){
                 $(target).hide();
                 authed = true;
+                channels.addAllChannels();
+                channels.renderChannelList();
             }
             break;
         case 'channel':

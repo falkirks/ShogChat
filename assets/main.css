@@ -16,7 +16,5 @@ body{
     max-height: 400px;
 }
 .channelRemove{
-    position: absolute;
-    right: 40px;
-    top: 28px;
+    float: right;
 }
