@@ -94,7 +94,7 @@ var channelManager = function(){
     };
     this.addMessage = function(name, message){
         var chan = this.chans.get(name);
-        if(chan.messages.length == 0 || chan.messages[chan.messages.length-1].content != message.content || chan.messages[chan.messages.length-1].sender != message.sender || (chan.messages[chan.messages.length-1].marked && message.marked)) {
+        if(chan.messages.length == 0 || (message.sender != session.split("$$")[0] && chan.messages[chan.messages.length-1].sender != message.sender)  || chan.messages[chan.messages.length-1].content != message.content || chan.messages[chan.messages.length-1].marked == message.marked) {
             chan.messages.push(message);
             if (name == this.currentChannel) {
                 this.chans.set(name, chan);
@@ -176,6 +176,11 @@ $("#sendButton").on("click", function(){
         }));
         $("#messageInput").val('');
         channels.renderMessageList();
+    }
+});
+$("#messageInput").keypress(function(e) {
+    if(e.which == 13) {
+        $("#sendButton").click();
     }
 });
 $("#addChannelButton").on("click", function(){
