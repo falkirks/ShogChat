@@ -52,7 +52,9 @@ var channelManager = function(){
             }
         }
         out += "</table>";
-        $("#channelHolder").html(out);
+        if($("#channelHolder").html() != out) {
+            $("#channelHolder").html(out);
+        }
     };
     this.renderMessageList = function(){
         if(this.currentChannel != false){
@@ -200,3 +202,11 @@ $('#channelHolder').on('click', '.channel', function(e){
         channels.setCurrentChan($(this).find('.channelName').first().html());
     }
 });
+setInterval(function () {
+    if(authed) {
+        if (channels.chans.get(channels.currentChannel) == null) {
+            channels.currentChannel = false;
+        }
+        channels.renderChannelList();
+    }
+}, 1000);
