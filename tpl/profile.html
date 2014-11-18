@@ -47,13 +47,17 @@
                     <td>{{user.token}}</td>
                 </tr>
                 <tr>
+                    <td><b>Desktop Notifications</b></td>
+                    <td><span id="desktopNotificationStatusHolder"></span><button id="requestNotificationButton" class="btn btn-success btn-sm">Enable</button> </td>
+                </tr>
+                <tr>
                     <td><b>Sessions</b></td>
                     <td>
-                        <ul>
+                        <table class="table table-bordered">
                             {{#user.sessions}}
-                                <li>{{ip}} <a href="/profile?destroysession={{id}}" class="btn btn-danger btn-sm close-session-btn">Close</a></li>
+                                <tr><td>{{ip}} <a href="/profile?destroysession={{id}}" class="btn btn-danger btn-sm close-session-btn">Close</a></td></tr>
                             {{/user.sessions}}
-                        </ul>
+                        </table>
                     </td>
                 </tr>
                 <tr>
@@ -89,3 +93,5 @@
         </form>
     </div>
 </div>
+<!-- For Desktop Notifications -->
+<script src="/assets/profile.js"></script>

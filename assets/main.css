@@ -10,6 +10,7 @@ body{
 }
 .close-session-btn{
     padding: 2px;
+    float: right;
 }
 #messageHolder{
     min-height: 400px;
@@ -19,4 +20,10 @@ body{
 }
 .channelRemove{
     float: right;
+}
+#requestNotificationButton{
+    float: right;
+}
+.session-list{
+    line-height: 50px;
 }
