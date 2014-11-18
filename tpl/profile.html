@@ -61,20 +61,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><a data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none">Repositories</a> <a href="/profile?reloadrepos" class="btn btn-info btn-sm">Reload</a></td>
-                    <td>
-                            <div class="panel panel-default">
-                                <div id="collapseOne" class="panel-collapse collapse out" role="tabpanel" aria-labelledby="headingOne">
-                                    <div class="panel-body">
-                                        <ul>
-                                            {{#user.repos}}
-                                            <li>{{name}}</li>
-                                            {{/user.repos}}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                    </td>
+                    <td><b>Last GitHub Repository Update</b></td>
+                    <td>{{user.reposupdated}} <a href="/profile?reloadrepos" class="btn btn-sm btn-info reloadrepo-btn">Update Now</a></td>
                 </tr>
             </tbody>
         </table>

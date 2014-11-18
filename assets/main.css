@@ -24,6 +24,6 @@ body{
 #requestNotificationButton{
     float: right;
 }
-.session-list{
-    line-height: 50px;
+.reloadrepo-btn{
+    float: right;
 }

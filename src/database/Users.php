@@ -13,6 +13,7 @@ class Users{
             "registration" => time(),
             "lastactive" => time(),
             "repos" => $repos,
+            "reposupdated" => @date("F j, Y, g:i a"),
             "sessions" => []
         ]);
     }
@@ -71,7 +72,8 @@ class Users{
     public static function updateRepos($name, $repos){
         return MongoConnector::getUserCollection()->update(["_id" => $name], [
             '$set' => [
-                "repos" => $repos
+                "repos" => $repos,
+                "reposupdated" => @date("F j, Y, g:i a")
             ]
         ]);
     }
