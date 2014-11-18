@@ -208,7 +208,7 @@ $('#channelHolder').on('click', '.channel', function(e){
     }
 });
 setInterval(function () {
-    if(authed) {
+    if (authed) {
         if (channels.chans.get(channels.currentChannel) == null) {
             channels.currentChannel = false;
         }
