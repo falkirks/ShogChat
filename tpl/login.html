@@ -1,55 +1,42 @@
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
+    <div class="container">
         <div class="navbar-header">
-            <div align="center">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="/"><span class="label label-default">ShogChat</span><i class="main-subtitle">->shogAllTheChats()</i></a>
-            </div>
-      </div>
+            </button>
+            <a class="navbar-brand" href="/"><span class="label label-default">ShogChat</span><i class="main-subtitle">->shogAllTheChats()</i></a>
+        </div>
     </div>
 </nav>
 <div class="container">
-    <div align="center">{{#error}} </div>
-    <div class="alert alert-danger alert-dismissible" role="alert">
-            <div align="center">
-              <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              {{& error }}
-            </div>
-    </div>
-    <div align="center">
-      <p>{{/error}} </p>
-      <p>&nbsp;</p>
-      <p>&nbsp;</p>
-      <p>&nbsp;</p>
-    </div>
+    {{#error}}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            {{& error }}
+        </div>
+    {{/error}}
     <form role="form" method="post">
         <div class="form-group">
             <div class="col-lg-6">
                 <div class="input-group">
-                    <div align="center"><span class="input-group-addon">@</span>
-                      <input name="login-username" type="text" class="form-control" placeholder="Username">
-                    </div>
+                    <span class="input-group-addon">@</span>
+                    <input name="login-username" type="text" class="form-control" placeholder="Username">
                 </div>
             </div>
         </div>
         <div class="form-group">
             <div class="col-lg-6">
                 <div class="input-group">
-                    <div align="center"><span class="input-group-addon">*</span>
-                      <input name="login-password" type="password" class="form-control" placeholder="Password">
-                    </div>
+                    <span class="input-group-addon">*</span>
+                    <input name="login-password" type="password" class="form-control" placeholder="Password">
                 </div>
             </div>
         </div>
         <div class="login-button">
-            <div align="center">
-              <button type="submit" class="btn btn-success" style="margin-top: 10px">Login</button>
-            </div>
+            <button type="submit" class="btn btn-success" style="margin-top: 10px">Login</button>
         </div>
     </form>
 </div>
