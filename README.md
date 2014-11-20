@@ -3,7 +3,7 @@ ShogChat
 ShogChat is a simple Gitter/IRC like app written in PHP. The core code was written in a weekend by @MegaSamNinja, @PEMapModder, @TuffDev, and @Falkirks.
 
 ### Features
-* IRC type chat; no chat history
+* IRC type chat (no chat history on server)
 * Web interface using WebSockets
 * IRC bridge (mostly compliant)
 * Mongo user accounts system
